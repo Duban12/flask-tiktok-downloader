@@ -3,44 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descargar Videos de TikTok</title>
+    <title>Descargar TikTok</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Descargar Video de TikTok</h1>
-    <input type="text" id="videoUrl" placeholder="Pega la URL del video">
-    <button onclick="descargarVideo()">Descargar</button>
 
-    <script>
-        function descargarVideo() {
-            const url = document.getElementById("videoUrl").value;
-            if (!url) {
-                alert("Por favor, ingresa una URL válida");
-                return;
-            }
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Descargar Video de TikTok</h1>
+    <div class="input-group mb-3">
+        <input type="text" id="url" class="form-control" placeholder="Pega el enlace de TikTok aquí">
+        <button class="btn btn-primary" onclick="descargarVideo()">Descargar</button>
+    </div>
+    <div id="mensaje" class="mt-3"></div>
+</div>
 
-            fetch("/download", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url: url })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("No se pudo descargar el video.");
-                }
-                return response.blob();
-            })
-            .then(blob => {
-                const link = document.createElement("a");
-                link.href = window.URL.createObjectURL(blob);
-                link.download = "video_tiktok.mp4";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            })
-            .catch(error => {
-                alert("Error: " + error.message);
-            });
+<script>
+function descargarVideo() {
+    let url = document.getElementById("url").value;
+    let mensaje = document.getElementById("mensaje");
+
+    fetch("/download", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ url: url })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            mensaje.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        } else {
+            mensaje.innerHTML = `<div class="alert alert-success">Descarga exitosa. Revisa tu carpeta de Descargas.</div>`;
         }
-    </script>
+    })
+    .catch(error => {
+        mensaje.innerHTML = `<div class="alert alert-danger">Error al descargar el video.</div>`;
+    });
+}
+</script>
+
 </body>
 </html>
