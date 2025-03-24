@@ -1,15 +1,15 @@
-from flask import Flask, request, jsonify, render_template, send_file
+from flask import Flask, request, jsonify, render_template, send_from_directory
 import yt_dlp
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 
-# Carpeta de descargas en la carpeta "Downloads" del usuario
+# Carpeta de descargas del usuario
 DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 def descargar_video(url):
-    """ Descarga un video de TikTok en la mejor calidad disponible y retorna la ruta del archivo. """
+    """Descarga un video de TikTok en la mejor calidad disponible."""
     try:
         opciones = {
             'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
@@ -21,7 +21,6 @@ def descargar_video(url):
             return ydl.prepare_filename(info)  # Ruta del archivo descargado
 
     except Exception as e:
-        print(f"Error al descargar el video: {e}")
         return None
 
 @app.route('/')
@@ -30,7 +29,7 @@ def home():
 
 @app.route('/download', methods=['POST'])
 def download():
-    """ API para descargar un video desde TikTok y enviarlo al usuario. """
+    """API para descargar un video desde TikTok."""
     try:
         data = request.get_json()
         url = data.get("url")
@@ -40,14 +39,20 @@ def download():
 
         file_path = descargar_video(url)
 
-        if not file_path or not os.path.exists(file_path):
-            return jsonify({"error": "No se pudo descargar el video"}), 500
+        if not file_path:
+            return jsonify({"error": "No se pudo descargar"}), 500
 
-        return send_file(file_path, as_attachment=True)
+        return jsonify({"message": "Descarga exitosa", "path": file_path})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory("static", filename)
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
 
