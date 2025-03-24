@@ -13,14 +13,22 @@ def descargar_video(url):
     try:
         opciones = {
             'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
-            'format': 'bestvideo+bestaudio/best',
+            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
+            'merge_output_format': 'mp4',  # Asegura que el archivo final sea MP4
         }
 
         with yt_dlp.YoutubeDL(opciones) as ydl:
             info = ydl.extract_info(url, download=True)
-            return ydl.prepare_filename(info)  # Ruta del archivo descargado
+            file_path = ydl.prepare_filename(info)  # Ruta del archivo descargado
+
+            # Verifica si el archivo existe
+            if os.path.exists(file_path):
+                return file_path
+            else:
+                return None
 
     except Exception as e:
+        print(f"Error en la descarga: {e}")
         return None
 
 @app.route('/')
@@ -42,7 +50,11 @@ def download():
         if not file_path:
             return jsonify({"error": "No se pudo descargar"}), 500
 
-        return jsonify({"message": "Descarga exitosa", "path": file_path})
+        return jsonify({
+            "message": "Descarga exitosa",
+            "file_path": file_path,
+            "note": "Revisa la carpeta de Descargas en tu PC."
+        })
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
