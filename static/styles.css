@@ -57,12 +57,16 @@ button:hover {
 
 
 footer {
-    margin-top: 20px;
-    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 10px 20px;
     background: #333;
     color: white;
-    text-align: center;
-    border-radius: 5px;
+    text-align: left;
+    font-size: 14px;
+    width: auto;
+    border-top-right-radius: 10px;
 }
 
 
