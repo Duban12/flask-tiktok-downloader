@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_file
 import yt_dlp
 import os
 
 app = Flask(__name__)
 
-# Carpeta de descargas del usuario
-DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
+# Carpeta de descargas en el servidor (Render)
+DOWNLOAD_FOLDER = "downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 def descargar_video(url):
@@ -13,22 +13,14 @@ def descargar_video(url):
     try:
         opciones = {
             'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
-            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]',
-            'merge_output_format': 'mp4',  # Asegura que el archivo final sea MP4
+            'format': 'bestvideo+bestaudio/best',
         }
 
         with yt_dlp.YoutubeDL(opciones) as ydl:
             info = ydl.extract_info(url, download=True)
-            file_path = ydl.prepare_filename(info)  # Ruta del archivo descargado
-
-            # Verifica si el archivo existe
-            if os.path.exists(file_path):
-                return file_path
-            else:
-                return None
+            return ydl.prepare_filename(info)  # Ruta del archivo descargado
 
     except Exception as e:
-        print(f"Error en la descarga: {e}")
         return None
 
 @app.route('/')
@@ -50,11 +42,7 @@ def download():
         if not file_path:
             return jsonify({"error": "No se pudo descargar"}), 500
 
-        return jsonify({
-            "message": "Descarga exitosa",
-            "file_path": file_path,
-            "note": "Revisa la carpeta de Descargas en tu PC."
-        })
+        return send_file(file_path, as_attachment=True)  # Permite descargar el archivo
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
