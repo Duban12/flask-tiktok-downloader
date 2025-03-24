@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Descargar Videos de TikTok</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Descargar Videos de TikTok sin Marca</h1>
-        <input type="text" id="url" placeholder="Pega la URL del video aquí">
-        <button onclick="descargar()">Descargar</button>
-        <p id="mensaje"></p>
-    </div>
+    <h1>Descargar Video de TikTok</h1>
+    <input type="text" id="videoUrl" placeholder="Pega la URL del video">
+    <button onclick="descargarVideo()">Descargar</button>
 
     <script>
-        function descargar() {
-            const url = document.getElementById("url").value;
+        function descargarVideo() {
+            const url = document.getElementById("videoUrl").value;
             if (!url) {
                 alert("Por favor, ingresa una URL válida");
                 return;
@@ -27,16 +23,22 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ url: url })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById("mensaje").textContent = "❌ Error: " + data.error;
-                } else {
-                    document.getElementById("mensaje").textContent = "✅ Descarga Finalizada ";
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("No se pudo descargar el video.");
                 }
+                return response.blob();
+            })
+            .then(blob => {
+                const link = document.createElement("a");
+                link.href = window.URL.createObjectURL(blob);
+                link.download = "video_tiktok.mp4";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             })
             .catch(error => {
-                document.getElementById("mensaje").textContent = "❌ Error: " + error;
+                alert("Error: " + error.message);
             });
         }
     </script>
