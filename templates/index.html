@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargar Videos de TikTok</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Descargar Videos de TikTok sin Marca</h1>
+        <input type="text" id="url" placeholder="Pega la URL del video aquí">
+        <button onclick="descargar()">Descargar</button>
+        <p id="mensaje"></p>
+    </div>
+
+    <script>
+        function descargar() {
+            const url = document.getElementById("url").value;
+            if (!url) {
+                alert("Por favor, ingresa una URL válida");
+                return;
+            }
+
+            fetch("/download", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById("mensaje").textContent = "❌ Error: " + data.error;
+                } else {
+                    document.getElementById("mensaje").textContent = "✅ Descarga Finalizada ";
+                }
+            })
+            .catch(error => {
+                document.getElementById("mensaje").textContent = "❌ Error: " + error;
+            });
+        }
+    </script>
+</body>
+</html>
