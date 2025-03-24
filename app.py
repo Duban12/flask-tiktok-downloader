@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Carpeta de descargas en la carpeta "Downloads" del usuario
+# Carpeta de descargas en "Downloads"
 DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
@@ -50,6 +50,5 @@ def download():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
 
 
