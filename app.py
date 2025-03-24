@@ -2,23 +2,21 @@ from flask import Flask, request, jsonify, render_template, send_from_directory
 import yt_dlp
 import os
 
-app = Flask(__name__, static_folder="static")
-
-# Carpeta de descargas del usuario
-DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
+# Cambia la carpeta de descargas a un directorio dentro del proyecto
+DOWNLOAD_FOLDER = os.path.join(os.getcwd(), "downloads")
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 def descargar_video(url):
-    """Descarga un video de TikTok en la mejor calidad disponible."""
-    try:
-        opciones = {
-            'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
-            'format': 'bestvideo+bestaudio/best',
-        }
+    opciones = {
+        'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
+        'format': 'bestvideo+bestaudio/best',
+    }
 
-        with yt_dlp.YoutubeDL(opciones) as ydl:
-            info = ydl.extract_info(url, download=True)
-            return ydl.prepare_filename(info)  # Ruta del archivo descargado
+    with yt_dlp.YoutubeDL(opciones) as ydl:
+        info = ydl.extract_info(url, download=True)
+        return ydl.prepare_filename(info)
+
+
 
     except Exception as e:
         return None
