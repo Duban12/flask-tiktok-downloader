@@ -1,17 +1,26 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
-    text-align: center;
-    padding: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
 .container {
     background: white;
-    padding: 20px;
+    padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    margin: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
 }
 
 input {
@@ -20,16 +29,20 @@ input {
     margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 16px;
 }
 
 button {
     background: #ff0050;
     color: white;
     border: none;
-    padding: 10px;
+    padding: 12px;
     cursor: pointer;
     width: 100%;
     border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s ease;
 }
 
 button:hover {
@@ -37,6 +50,8 @@ button:hover {
 }
 
 #mensaje {
-    margin-top: 10px;
+    margin-top: 15px;
     font-weight: bold;
+    color: #333;
 }
+
